@@ -20,11 +20,15 @@ class Welcome extends Application {
     //-------------------------------------------------------------
 
     function index() {
+        
+        // Load order model
+        $this->load->model('orders');
+        
         $this->data['title'] = 'Jim\'s Joint!';
         $this->data['pagebody'] = 'welcome';
 
         // Get all the completed orders
-        //FIXME
+        $completed = $this->orders->some('status','c');
 
         // Build a multi-dimensional array for reporting
         $orders = array();
