@@ -17,7 +17,17 @@ class Order extends Application {
 
     // start a new order
     function neworder() {
-        //FIXME
+        
+        // get last order number used and increment
+        $order_num = $this->orders->highest() + 1;
+        
+        // create new order and add it to the list of orders
+        $new_order = $this->orders->create();
+        $new_order->num = $order_num;
+        $new_order->date = date();
+        $new_order->status = 'a';
+        $new_order->total = 0;
+        $this->orders->add($new_order);
 
         redirect('/order/display_menu/' . $order_num);
     }
