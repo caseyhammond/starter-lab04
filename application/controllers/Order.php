@@ -75,13 +75,12 @@ class Order extends Application {
     
     // make a menu ordering column
     function make_column($category) {
-        
         return $this->menu->some('category',$category);
     }
 
     // add an item to an order
     function add($order_num, $item) {
-        //FIXME
+        $this->orders->add_item($order_num, $item);
         redirect('/order/display_menu/' . $order_num);
     }
 
