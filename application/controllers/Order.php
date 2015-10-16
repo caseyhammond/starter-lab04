@@ -17,6 +17,7 @@ class Order extends Application {
 
     // start a new order
     function neworder() {
+        date_default_timezone_set('America/Vancouver');
         
         // get last order number used and increment
         $order_num = $this->orders->highest() + 1;
@@ -24,7 +25,7 @@ class Order extends Application {
         // create new order and add it to the list of orders
         $new_order = $this->orders->create();
         $new_order->num = $order_num;
-        $new_order->date = date();
+        $new_order->date = date('Y-m-d H:m:s');
         $new_order->status = 'a';
         $new_order->total = 0;
         $this->orders->add($new_order);
@@ -41,7 +42,7 @@ class Order extends Application {
         $this->data['order_num'] = $order_num;
         
         // display order number and total in page title
-        $this->data['title'] = "Order # " . $order_num . ' ('. number_format($this->orders->total($order_num), 2) . ')';
+        $this->data['title'] = "Order # " . $order_num . ' ($'. number_format($this->orders->total($order_num), 2) . ')';
 
         // Make the columns
         $this->data['meals'] = $this->make_column('m');
@@ -90,7 +91,7 @@ class Order extends Application {
         $this->data['pagebody'] = 'show_order';
         $this->data['order_num'] = $order_num;
         
-        $this->data['total'] = money_format($this->orders->total($order_num), 2);
+        $this->data['total'] = '$' . number_format($this->orders->total($order_num), 2);
         
         // add all the data to the order items for the order
         $items = $this->orderitems->group($order_num);
@@ -108,13 +109,27 @@ class Order extends Application {
 
     // proceed with checkout
     function proceed($order_num) {
-        //FIXME
+        date_default_timezone_set('America/Vancouver');
+        
+        if (!$this->orders->validate($order_num)) {
+            redirect('/order/display_menu/' . $order_num);
+        }
+        $record = $this->orders->get($order_num);
+        $record->date = date('Y-m-d H:m:s');
+        $record->status = 'c';
+        $record->total = $this->orders->total($order_num);
+        $this->orders->update($record);
+        
         redirect('/');
     }
 
     // cancel the order
     function cancel($order_num) {
-        //FIXME
+        $this->orderitems->delete_some($order_num);
+        $record = $this->orders->get($order_num);
+        $record->status = 'x';
+        $this->orders->update($record);
+        
         redirect('/');
     }
 

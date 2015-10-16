@@ -12,7 +12,7 @@
     <tr>
         <td>{num}</td>
         <td>{datetime}</td>
-        <td>{amount}</td>
+        <td>${amount}</td>
     </tr>
     {/orders}
 </table>
