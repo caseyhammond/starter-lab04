@@ -89,7 +89,19 @@ class Order extends Application {
         $this->data['title'] = 'Checking Out';
         $this->data['pagebody'] = 'show_order';
         $this->data['order_num'] = $order_num;
-        //FIXME
+        
+        $this->data['total'] = money_format($this->orders->total($order_num), 2);
+        
+        // add all the data to the order items for the order
+        $items = $this->orderitems->group($order_num);
+        foreach ($items as $item) {
+            $menuitem = $this->menu->get($item->item);
+            $item->code = $menuitem->name;
+        }
+        $this->data['items'] = $items;
+        
+        // adds CSS styling to show whether order is valid or not
+        $this->data['okornot'] = $this->orders->validate($order_num) ? "" : "disabled";
 
         $this->render();
     }
